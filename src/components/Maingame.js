@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Cardturn from './Cardturn'
 import { useChannelStateContext, useChatContext } from 'stream-chat-react'
 import { Patterns } from './Win';
