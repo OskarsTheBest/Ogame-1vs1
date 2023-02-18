@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState} from 'react'
 import './App.css';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -7,12 +7,16 @@ import { StreamChat } from 'stream-chat';
 import {Chat} from 'stream-chat-react';
 import Cookies from "universal-cookie";
 
+
+
+
 function App() {
   const api_key = "cy5uuk3773vq";
   const cookies = new Cookies();
   const token = cookies.get("token");
   const client = StreamChat.getInstance(api_key);
   const [isAuth, setIsAuth] = useState(false);
+
 
   const logOut = () => {
     cookies.remove("token");
