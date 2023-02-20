@@ -6,12 +6,15 @@ import './Components.css';
 import Board from './Board';
 import Keyboard from './Keyboard';
 import { boardDefault } from './Words';
-
+import WordInput from './WordInput';
 
 
 export const Gamecontext = createContext();
 
 function Game({channel}) {
+  //popup
+  const [showWordInput, setShowWordInput] = useState(false)
+
   //wordle
   const [board, setBoard] = useState(boardDefault);
   const [currAttempt, setCurrAttempt] = useState({attempt: 0, letterPos: 0});
@@ -58,8 +61,11 @@ if (!playersJoined){
     <div className='gameContainer'>
 
       {/* <MainGame result ={result} setResult={setResult}/> */}
-      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord,}}>
+      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord,setShowWordInput, showWordInput}}>
       <div className='game'>
+      <button onClick={() =>
+      setShowWordInput(true)}>Show</button>
+      <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)}/>
       <Board/>
       <Keyboard/>
       </div>
