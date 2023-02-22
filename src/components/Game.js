@@ -13,7 +13,15 @@ export const Gamecontext = createContext();
 
 function Game({channel}) {
   //popup
-  const [showWordInput, setShowWordInput] = useState(false)
+  const [showWordInput, setShowWordInput] = useState(true)
+  // input for wordle
+
+  const [inputValue, setInputValue] = useState("");
+
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  }
 
   //wordle
   const [board, setBoard] = useState(boardDefault);
@@ -51,7 +59,7 @@ function Game({channel}) {
 channel.on("user.watching.start", (event) => {
   setPlayersJoined(event.watcher_count === 2);
 });
-
+console.log(inputValue);
 // winner
 const [result, setResult] = useState({winner: "none", state:"none"})
 if (!playersJoined){
@@ -63,9 +71,10 @@ if (!playersJoined){
       {/* <MainGame result ={result} setResult={setResult}/> */}
       <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord,setShowWordInput, showWordInput}}>
       <div className='game'>
-      <button onClick={() =>
-      setShowWordInput(true)}>Show</button>
-      <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)}/>
+      {/*<button onClick={() =>
+      setShowWordInput(true)}>Show</button> */}
+      <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)} inputValue={inputValue} onInputChange={handleInputChange}/>
+
       <Board/>
       <Keyboard/>
       </div>

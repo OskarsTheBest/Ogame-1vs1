@@ -9,3 +9,5 @@ function cardTurn({chooseCard, val}) {
 }
 
 export default cardTurn
+
+
