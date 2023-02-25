@@ -1,36 +1,39 @@
-import React, { useState, createContext, useEffect  } from 'react'
+import React, { useState, createContext, useEffect, useContext, useRef } from 'react'
 import { Window, MessageList, MessageInput } from 'stream-chat-react'
 import './Chat.css';
 import MainGame from './Maingame';
 import './Components.css';
 import Board from './Board';
 import Keyboard from './Keyboard';
-import { boardDefault } from './Words';
+import { boardDefault, generateWordSet } from './Words';
 import WordInput from './WordInput';
-
-
+import { Inputcontext } from './WordInput';
+import wordleInput from './WordInput';
 export const Gamecontext = createContext();
 
 function Game({channel}) {
+
+
+
   //popup
-  const [showWordInput, setShowWordInput] = useState(true)
+ // const [showWordInput, setShowWordInput] = useState(true)
   // input for wordle
-
-  const [inputValue, setInputValue] = useState("");
-
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  }
 
   //wordle
   const [board, setBoard] = useState(boardDefault);
   const [currAttempt, setCurrAttempt] = useState({attempt: 0, letterPos: 0});
+  const [wordSet, setWordSet] = useState(new Set())
+  const [disabledLetters, setDisabledLetters] = useState([]);
 
-  const correctWord = "RIGHT";
+  const correctWord = "HELLO";
+
   useEffect(() => {
-  // Here goes the input from player 2 for player 1 word, and otherwise too
-  }, [])
+    generateWordSet().then((words) => {
+      setWordSet(words.wordSet);
+      console.log(words);
+    });
+  }, [setWordSet]);
+
 
   const onSelectLetter = (keyVal) =>{
     if (currAttempt.letterPos > 4) return;
@@ -51,7 +54,19 @@ function Game({channel}) {
 
   const onEnter = () => {
     if (currAttempt.letterPos !== 5) return;
-    setCurrAttempt({attempt: currAttempt.attempt + 1, letterPos: 0})
+    let currWord = "";
+    for (let i = 0; i < 5; i++) {
+      currWord += board[currAttempt.attempt][i];
+    }
+    if (wordSet.has(currWord.toLowerCase())) {
+      setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0});
+    } else {
+      alert ("Word not found, look here for every accepted wordle word https://www.stadafa.com/2021/09/every-worlde-word-so-far-updated-daily.html")
+    }
+
+    if (currWord === correctWord){
+      alert("Game finished")
+    }
   }
 
   const [playersJoined, setPlayersJoined] = useState(channel.state.watcher_count === 2);
@@ -59,7 +74,7 @@ function Game({channel}) {
 channel.on("user.watching.start", (event) => {
   setPlayersJoined(event.watcher_count === 2);
 });
-console.log(inputValue);
+
 // winner
 const [result, setResult] = useState({winner: "none", state:"none"})
 if (!playersJoined){
@@ -67,22 +82,21 @@ if (!playersJoined){
     }
   return (
     <div className='gameContainer'>
-
       {/* <MainGame result ={result} setResult={setResult}/> */}
-      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord,setShowWordInput, showWordInput}}>
-      <div className='game'>
-      {/*<button onClick={() =>
-      setShowWordInput(true)}>Show</button> */}
-      <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)} inputValue={inputValue} onInputChange={handleInputChange}/>
-
-      <Board/>
-      <Keyboard/>
-      </div>
+      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters}}>
+        <div className='game'>
+          {/*<button onClick={() =>
+          setShowWordInput(true)}>Show</button> */}
+         {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
+          <Board/>
+          <Keyboard/>
+        </div>
       </Gamecontext.Provider>
       <Window>
-       <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages/>
-       <MessageInput noFiles/>
+        <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages/>
+        <MessageInput noFiles/>
       </Window>
+
     </div>
   )
 }

@@ -9,7 +9,7 @@ function Keyboard() {
   const keys2 = ["A","S","D","F","G","H","J","K","L"];
   const keys3 = ["Z","X","C","V","B","N","M"];
 
-  const { onDelete, onSelectLetter, onEnter, setShowWordInput, showWordInput } = useContext(Gamecontext);
+  const { onDelete, onSelectLetter, onEnter, setShowWordInput, showWordInput, disabledLetters } = useContext(Gamecontext);
 
   const handleKeyboard = useCallback((event) => {
     if (event.key === "Enter"){
