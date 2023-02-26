@@ -50,12 +50,9 @@ function Keyboard() {
   return (
     <div className='keyboard'>
       <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)} />
-      <div className='line1'>{keys1.map(key => <Key keyVal={key} key={key} />)}</div>
-      <div className='line2'>{keys2.map(key => <Key keyVal={key} key={key} />)}</div>
-      <div className='line3'>
-        <Key keyVal='ENTER' bigKey />
-        {keys3.map(key => <Key keyVal={key} key={key} />)}
-        <Key keyVal='DELETE' bigKey />
+      <div className='line1'>{keys1.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}</div>;
+      <div className='line2'>{keys2.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}</div>;
+      <div className='line3'><Key keyVal='ENTER' bigKey />{keys3.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}<Key keyVal='DELETE' bigKey />
       </div>
     </div>
   );

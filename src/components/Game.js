@@ -9,6 +9,7 @@ import { boardDefault, generateWordSet } from './Words';
 import WordInput from './WordInput';
 import { Inputcontext } from './WordInput';
 import wordleInput from './WordInput';
+import GameOver from './GameOver';
 export const Gamecontext = createContext();
 
 function Game({channel}) {
@@ -24,13 +25,14 @@ function Game({channel}) {
   const [currAttempt, setCurrAttempt] = useState({attempt: 0, letterPos: 0});
   const [wordSet, setWordSet] = useState(new Set())
   const [disabledLetters, setDisabledLetters] = useState([]);
+  const [gameOver, setGameOver] = useState({gameOver: false, guessedWord: false,});
+  const [correctWord, setCorrectWord] = useState("");
 
-  const correctWord = "HELLO";
 
   useEffect(() => {
     generateWordSet().then((words) => {
       setWordSet(words.wordSet);
-      console.log(words);
+      setCorrectWord(words.todaysWords);
     });
   }, [setWordSet]);
 
@@ -65,7 +67,11 @@ function Game({channel}) {
     }
 
     if (currWord === correctWord){
-      alert("Game finished")
+      setGameOver({gameOver: true, guessedWord: true});
+      return;
+    }
+    if (currAttempt.attempt === 5){
+      setGameOver({gameOver: true, guessedWord: false});
     }
   }
 
@@ -83,13 +89,13 @@ if (!playersJoined){
   return (
     <div className='gameContainer'>
       {/* <MainGame result ={result} setResult={setResult}/> */}
-      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters}}>
+      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver}}>
         <div className='game'>
           {/*<button onClick={() =>
           setShowWordInput(true)}>Show</button> */}
          {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
           <Board/>
-          <Keyboard/>
+          { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
         </div>
       </Gamecontext.Provider>
       <Window>
