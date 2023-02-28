@@ -59,6 +59,7 @@ function Game({channel}) {
     let currWord = "";
     for (let i = 0; i < 5; i++) {
       currWord += board[currAttempt.attempt][i];
+      currWord.toLowerCase();
     }
     if (wordSet.has(currWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0});
@@ -73,6 +74,9 @@ function Game({channel}) {
     if (currAttempt.attempt === 5){
       setGameOver({gameOver: true, guessedWord: false});
     }
+    console.log(currWord.toLowerCase());
+    console.log(correctWord);
+    console.log(currAttempt);
   }
 
   const [playersJoined, setPlayersJoined] = useState(channel.state.watcher_count === 2);
