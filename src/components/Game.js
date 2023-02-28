@@ -34,7 +34,8 @@ function Game({channel}) {
       setWordSet(words.wordSet);
       setCorrectWord(words.todaysWords);
     });
-  }, [setWordSet]);
+  }, [ ]);
+  //    ^setWordSet
 
 
   const onSelectLetter = (keyVal) =>{
@@ -64,14 +65,14 @@ function Game({channel}) {
     if (wordSet.has(currWord.toLowerCase())) {
       setCurrAttempt({ attempt: currAttempt.attempt + 1, letterPos: 0});
     } else {
-      alert ("Word not found, look here for every accepted wordle word https://www.stadafa.com/2021/09/every-worlde-word-so-far-updated-daily.html")
+      alert ("Word not found")
     }
 
-    if (currWord === correctWord){
+    if (currWord.toLowerCase() === correctWord.toLowerCase()){
       setGameOver({gameOver: true, guessedWord: true});
       return;
     }
-    if (currAttempt.attempt === 5){
+    if (currAttempt.attempt === 5 && wordSet.has(currWord.toLowerCase())){
       setGameOver({gameOver: true, guessedWord: false});
     }
     console.log(currWord.toLowerCase());
