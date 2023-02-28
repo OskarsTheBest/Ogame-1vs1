@@ -3,6 +3,7 @@ import './Components.css';
 import Key from './Key';
 import { Gamecontext } from './Game';
 import WordInput from './WordInput';
+import { MessageInput } from 'stream-chat-react';
 
 function Keyboard() {
   const keys1 = ["Q", "W", "E","R","T","Y","U", "I", "O","P"];
@@ -41,6 +42,8 @@ function Keyboard() {
     } else {
       document.removeEventListener("keydown", handleKeyboard);
     }
+
+  
 
     return () => {
       document.removeEventListener("keydown", handleKeyboard);

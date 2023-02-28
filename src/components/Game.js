@@ -93,7 +93,7 @@ if (!playersJoined){
   return (
     <div className='gameContainer'>
       {/* <MainGame result ={result} setResult={setResult}/> */}
-      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver}}>
+      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
         <div className='game'>
           {/*<button onClick={() =>
           setShowWordInput(true)}>Show</button> */}
