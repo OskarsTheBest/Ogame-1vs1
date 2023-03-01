@@ -13,6 +13,9 @@ function Keyboard() {
   const { onDelete, onSelectLetter, onEnter, setShowWordInput, showWordInput, disabledLetters } = useContext(Gamecontext);
 
   const handleKeyboard = useCallback((event) => {
+    if (document.activeElement === document.querySelector(".str-chat__message-textarea")) {
+      return;
+    }
     if (event.key === "Enter"){
       onEnter();
     } else if (event.key === "Backspace"){
