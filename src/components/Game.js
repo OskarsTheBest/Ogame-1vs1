@@ -1,7 +1,7 @@
 import React, { useState, createContext, useEffect, useContext, useRef } from 'react'
-import { Window, MessageList, MessageInput } from 'stream-chat-react'
+import { Window, MessageList, MessageInput, useChatContext } from 'stream-chat-react'
 import './Chat.css';
-import MainGame from './Maingame';
+
 import './Components.css';
 import Board from './Board';
 import Keyboard from './Keyboard';
@@ -10,9 +10,13 @@ import WordInput from './WordInput';
 import { Inputcontext } from './WordInput';
 import wordleInput from './WordInput';
 import GameOver from './GameOver';
+import Cookies from "universal-cookie";
+
+
+
 export const Gamecontext = createContext();
 
-function Game({channel}) {
+function Game({channel, selectedWord, wordSet}) {
 
 
 
@@ -23,20 +27,17 @@ function Game({channel}) {
   //wordle
   const [board, setBoard] = useState(boardDefault);
   const [currAttempt, setCurrAttempt] = useState({attempt: 0, letterPos: 0});
-  const [wordSet, setWordSet] = useState(new Set())
   const [disabledLetters, setDisabledLetters] = useState([]);
   const [gameOver, setGameOver] = useState({gameOver: false, guessedWord: false,});
-  const [correctWord, setCorrectWord] = useState("");
+  const [correctWord, setCorrectWord] = useState(selectedWord);
+  const [wordleWord, setWordleWord] = useState("");
+  const { client } = useChatContext();
 
 
-  useEffect(() => {
-    generateWordSet().then((words) => {
-      setWordSet(words.wordSet);
-      setCorrectWord(words.todaysWords);
-    });
-  }, [ ]);
-  //    ^setWordSet
 
+
+
+  
 
   const onSelectLetter = (keyVal) =>{
     if (currAttempt.letterPos > 4) return;
@@ -70,12 +71,23 @@ function Game({channel}) {
 
     if (currWord.trim().toLowerCase() === correctWord.trim().toLowerCase()) {
       setGameOver({gameOver: true, guessedWord: true})
+      channel.sendMessage({
+        text: `${client.user?.name} guessed the word "${correctWord}"!`,
+        message_type: 'win',
+      });
     }
     if (currAttempt.attempt === 5 && wordSet.has(currWord.toLowerCase())){
       setGameOver({gameOver: true, guessedWord: false});
     }
-
+    console.log(correctWord);
   }
+
+
+
+  // PLAYER LOGIC
+ 
+
+
 
   const [playersJoined, setPlayersJoined] = useState(channel.state.watcher_count === 2);
 

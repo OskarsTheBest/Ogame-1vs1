@@ -1,4 +1,4 @@
-import React, { useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import './App.css';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -6,11 +6,30 @@ import JoinGame from './components/JoinGame';
 import { StreamChat } from 'stream-chat';
 import {Chat} from 'stream-chat-react';
 import Cookies from "universal-cookie";
+import { generateWordSet } from './components/Words';
 
 
 
 
 function App() {
+
+
+  //wordle gen word
+
+  const [selectedWord, setSelectedWord] = useState("");
+  const [wordSet, setWordSet] = useState(new Set());
+
+  useEffect(() => {
+    generateWordSet().then((words) => {
+      setWordSet(words.wordSet);
+      setSelectedWord(words.todaysWords);
+    });
+  }, []);
+
+
+
+
+
   const api_key = "cy5uuk3773vq";
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -47,7 +66,7 @@ function App() {
     <div className="App">
         {isAuth ? ( 
           <Chat client={client}>
-          <JoinGame />
+          <JoinGame wordSet={wordSet}  selectedWord={selectedWord}/>
           <button onClick={logOut}>Log Out</button>
           </Chat>
         ) : (

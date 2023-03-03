@@ -1,13 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import {useChatContext, Channel} from 'stream-chat-react'
 import CustomInput from './CustomInput';
+import { generateWordSet } from './Words';
 import Game from './Game';
 
 
-function JoinGame() {
+
+
+function JoinGame({ wordSet, selectedWord }) {
   const [rivalUsername, setRivalUsername] = useState("");
   const { client } = useChatContext();
   const [channel, setchannel] = useState(null)
+
+
+
+  
+
+
   const createChannel = async () => {
     const response = await client.queryUsers({ name: { $eq: rivalUsername}});
 
@@ -18,16 +27,21 @@ function JoinGame() {
 
     const newChannel = await client.channel("messaging", {
       members: [client.userID, response.users[0].id],
+      selectedWord: selectedWord,
     });
 
     await newChannel.watch();
     setchannel(newChannel);
+
   };
+
   return (
     <>
+
     {channel ? (
       <Channel channel={channel} Input={CustomInput}>
-        <Game channel={channel}/>
+      {channel && <Game channel={channel} wordSet={wordSet} selectedWord={selectedWord}/>}
+
       </Channel>
     )  : (
     
@@ -39,8 +53,10 @@ function JoinGame() {
     }}
      />
      <button onClick={createChannel}> Join game</button>
+
     </div>
   )}
+
   </>
   )
 }
