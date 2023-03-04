@@ -36,8 +36,9 @@ function Game({channel, selectedWord, wordSet}) {
   const [winnerUsername, setWinnerUsername] = useState("");
   const [winnerTempWord, setWinnerTempWord] = useState("");
   const [winnerAttempt, setWinnerAttempt] = useState("");
-  const [looseAttempt, setLooseAttempt] = useState("");
   const [checkLoose, setCheckLoose] = useState(false);
+  const [timer, setTimer] = useState(320);
+
   
 
 
@@ -108,6 +109,44 @@ function Game({channel, selectedWord, wordSet}) {
     console.log(correctWord);
   } 
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer > 0) {
+          return prevTimer - 1;
+        } else {
+          channel.sendMessage({
+            text: `${client.user?.name} failed to guess the word "${correctWord}"!`,
+            message_type: 'loose'
+          })
+          clearInterval(intervalId);
+          return prevTimer;
+        }
+      });
+    }, 1000); // 1000ms = 1 second
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+
+
+
+
+
+  useEffect(() => {
+    // This effect will run when the component mounts or when a new game is created
+    // and will clear the messages in the channel
+    channel.truncate();
+  }, [channel]);
+
+
+
+
+
+
+
   //checkwin
   useEffect(() => {
 
@@ -156,6 +195,12 @@ function Game({channel, selectedWord, wordSet}) {
       channel.off("message.updated", handleEvent);
     };
   }, []);
+
+
+
+
+
+  
   
 
 
@@ -174,15 +219,31 @@ if (!playersJoined){
   return (
     <div className='gameContainer'>
 
-      { checkLoose ? <Loose/> : null}
-      {/* <MainGame result ={result} setResult={setResult}/> */}
+{checkWin ? (
+        <Win winnerUserId={winnerUserId} winnerTempWord={winnerTempWord} winnerUsername={winnerUsername} winnerAttempt={winnerAttempt} channel={channel} />
+      ) : checkLoose ? (
+        <Loose />
+      ) : (
+        <>
+          <p>{`Time remaining: ${Math.floor(timer / 60)}:${timer % 60
+            .toString()
+            .padStart(2, '0')}`}</p>
+          {/* display the time remaining in minutes:seconds format */}
+        </>
+      )}
+      {!checkWin && !checkLoose && timer === 0 && (
+        <div>
+          <p>Time's up!</p>
+        </div>
+      )}
       <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
         <div className='game'>
+        
           {/*<button onClick={() =>
           setShowWordInput(true)}>Show</button> */}
          {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
 
-         { checkWin  ? <Win winnerUserId={winnerUserId} winnerTempWord={winnerTempWord} winnerUsername={winnerUsername} winnerAttempt={winnerAttempt} channel={channel} /> : <Board/>}
+          <Board/>
           { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
         </div>
       </Gamecontext.Provider>
