@@ -32,7 +32,11 @@ function Game({channel, selectedWord, wordSet}) {
   const [gameOver, setGameOver] = useState({gameOver: false, guessedWord: false,});
   const [correctWord, setCorrectWord] = useState(selectedWord);
   const [checkWin, setCheckWin] = useState(false);
-  const [winner, setWinner] = useState({ userId: '', tempWord: '' });
+  const [winnerUserId, setWinnerUserId] = useState(null);
+  const [winnerUsername, setWinnerUsername] = useState("");
+  const [winnerTempWord, setWinnerTempWord] = useState("");
+  const [winnerAttempt, setWinnerAttempt] = useState("");
+
   const { client } = useChatContext();
 
 
@@ -75,9 +79,14 @@ function Game({channel, selectedWord, wordSet}) {
       channel.sendMessage({
         text: `${client.user?.name} guessed the word "${correctWord}"!`,
         message_type: 'win',
+        winnerUserId: client.user?.id,
+        winnerTempWord: currWord,
+        winnerUsername: client.user?.name,
+        winnerAttempt: currAttempt.attempt
+        
       });
-      setWinner({ userId: client.user?.id, tempWord: currWord });
-      setGameOver({gameOver: true, guessedWord: true});
+
+
 
     }
     if (currAttempt.attempt === 5 && wordSet.has(currWord.toLowerCase())){
@@ -132,7 +141,8 @@ if (!playersJoined){
           {/*<button onClick={() =>
           setShowWordInput(true)}>Show</button> */}
          {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
-         { checkWin ? <Win winner={winner} /> : <Board /> }
+
+         { checkWin  ? <Win winnerUserId={winnerUserId} winnerTempWord={winnerTempWord} winnerUsername={winnerUsername} winnerAttempt={winnerAttempt} channel={channel} /> : <Board/>}
           { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
         </div>
       </Gamecontext.Provider>
