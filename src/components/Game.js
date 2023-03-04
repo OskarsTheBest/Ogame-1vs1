@@ -11,7 +11,7 @@ import { Inputcontext } from './WordInput';
 import wordleInput from './WordInput';
 import GameOver from './GameOver';
 import Win from './Win';
-
+import Loose from './Loose';
 
 
 
@@ -36,6 +36,14 @@ function Game({channel, selectedWord, wordSet}) {
   const [winnerUsername, setWinnerUsername] = useState("");
   const [winnerTempWord, setWinnerTempWord] = useState("");
   const [winnerAttempt, setWinnerAttempt] = useState("");
+  const [looseAttempt, setLooseAttempt] = useState("");
+  const [checkLoose, setCheckLoose] = useState(false);
+  
+
+
+
+
+
 
   const { client } = useChatContext();
 
@@ -90,12 +98,17 @@ function Game({channel, selectedWord, wordSet}) {
 
     }
     if (currAttempt.attempt === 5 && wordSet.has(currWord.toLowerCase())){
+      channel.sendMessage({
+        text: `${client.user?.name} failed to guess the word "${correctWord}"!`,
+        message_type: 'loose'
+      })
+
       setGameOver({gameOver: true, guessedWord: false});
     }
     console.log(correctWord);
-  }
+  } 
 
-
+  //checkwin
   useEffect(() => {
 
     const handleEvent = (event) => {
@@ -104,6 +117,7 @@ function Game({channel, selectedWord, wordSet}) {
         event.message.text.includes("guessed the word")
       ) {
         setCheckWin(true);
+        setGameOver({gameOver: false, guessedWord: false});
       }
     };
 
@@ -115,8 +129,34 @@ function Game({channel, selectedWord, wordSet}) {
       channel.off("message.updated", handleEvent);
     };
   }, []);
-  // PLAYER LOGIC
+  // checkloose
  
+  useEffect(() => {
+
+    let count = 0; // initialize a counter variable
+  
+    const handleEvent = (event) => {
+      if (
+        event.type === "message.new" &&
+        event.message.text.includes("failed to guess")
+      ) {
+        count++; // increment the counter
+        if (count === 2) {
+          setGameOver({gameOver: false, guessedWord: false});
+          setCheckLoose(true); // set checkWin to true when the message is seen twice
+        }
+      }
+    };
+  
+    channel.on("message.new", handleEvent);
+    channel.on("message.updated", handleEvent);
+  
+    return () => {
+      channel.off("message.new", handleEvent);
+      channel.off("message.updated", handleEvent);
+    };
+  }, []);
+  
 
 
 
@@ -134,7 +174,7 @@ if (!playersJoined){
   return (
     <div className='gameContainer'>
 
-
+      { checkLoose ? <Loose/> : null}
       {/* <MainGame result ={result} setResult={setResult}/> */}
       <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
         <div className='game'>
