@@ -10,7 +10,8 @@ import WordInput from './WordInput';
 import { Inputcontext } from './WordInput';
 import wordleInput from './WordInput';
 import GameOver from './GameOver';
-import Cookies from "universal-cookie";
+import Win from './Win';
+
 
 
 
@@ -30,7 +31,8 @@ function Game({channel, selectedWord, wordSet}) {
   const [disabledLetters, setDisabledLetters] = useState([]);
   const [gameOver, setGameOver] = useState({gameOver: false, guessedWord: false,});
   const [correctWord, setCorrectWord] = useState(selectedWord);
-  const [wordleWord, setWordleWord] = useState("");
+  const [checkWin, setCheckWin] = useState(false);
+  const [winner, setWinner] = useState({ userId: '', tempWord: '' });
   const { client } = useChatContext();
 
 
@@ -70,11 +72,13 @@ function Game({channel, selectedWord, wordSet}) {
     }
 
     if (currWord.trim().toLowerCase() === correctWord.trim().toLowerCase()) {
-      setGameOver({gameOver: true, guessedWord: true})
       channel.sendMessage({
         text: `${client.user?.name} guessed the word "${correctWord}"!`,
         message_type: 'win',
       });
+      setWinner({ userId: client.user?.id, tempWord: currWord });
+      setGameOver({gameOver: true, guessedWord: true});
+
     }
     if (currAttempt.attempt === 5 && wordSet.has(currWord.toLowerCase())){
       setGameOver({gameOver: true, guessedWord: false});
@@ -83,7 +87,25 @@ function Game({channel, selectedWord, wordSet}) {
   }
 
 
+  useEffect(() => {
 
+    const handleEvent = (event) => {
+      if (
+        event.type === "message.new" &&
+        event.message.text.includes("guessed the word")
+      ) {
+        setCheckWin(true);
+      }
+    };
+
+    channel.on("message.new", handleEvent);
+    channel.on("message.updated", handleEvent);
+
+    return () => {
+      channel.off("message.new", handleEvent);
+      channel.off("message.updated", handleEvent);
+    };
+  }, []);
   // PLAYER LOGIC
  
 
@@ -102,18 +124,20 @@ if (!playersJoined){
     }
   return (
     <div className='gameContainer'>
+
+
       {/* <MainGame result ={result} setResult={setResult}/> */}
       <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
         <div className='game'>
           {/*<button onClick={() =>
           setShowWordInput(true)}>Show</button> */}
          {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
-          <Board/>
+         { checkWin ? <Win winner={winner} /> : <Board /> }
           { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
         </div>
       </Gamecontext.Provider>
       <Window>
-        <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages/>
+        <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages />
         <MessageInput noFiles/>
       </Window>
 
