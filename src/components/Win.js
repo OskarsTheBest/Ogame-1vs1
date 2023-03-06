@@ -9,7 +9,7 @@ const Win = ({channel}) => {
   }
 
   const winMessage = channel.state.messages[channel.state.messages.length - 1];
-  const winnerUserId = winMessage.winnerUserId;
+
   const winnerTempWord = winMessage.winnerTempWord;
   const winnerUsername = winMessage.winnerUsername;
   const winnerAttempt = winMessage.winnerAttempt;

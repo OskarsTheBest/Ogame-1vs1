@@ -12,7 +12,7 @@ import wordleInput from './WordInput';
 import GameOver from './GameOver';
 import Win from './Win';
 import Loose from './Loose';
-
+import axios from 'axios';
 
 
 export const Gamecontext = createContext();
@@ -39,7 +39,10 @@ function Game({channel, selectedWord, wordSet}) {
   const [checkLoose, setCheckLoose] = useState(false);
   const [timer, setTimer] = useState(320);
 
-  
+  //db
+  const [win, setWin] = useState(false);
+  const [loss, setLoss] = useState(false);
+  const [userId, setUserId] = useState(null);
 
 
 
@@ -94,7 +97,7 @@ function Game({channel, selectedWord, wordSet}) {
         winnerAttempt: currAttempt.attempt
         
       });
-
+      addStatsToDatabase(client.user?.id, true);
 
 
     }
@@ -103,11 +106,15 @@ function Game({channel, selectedWord, wordSet}) {
         text: `${client.user?.name} failed to guess the word "${correctWord}"!`,
         message_type: 'loose'
       })
-
       setGameOver({gameOver: true, guessedWord: false});
+      addStatsToDatabase(client.user?.id, false);
     }
     console.log(correctWord);
-  } 
+
+  };
+
+
+   
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -119,6 +126,7 @@ function Game({channel, selectedWord, wordSet}) {
             text: `${client.user?.name} failed to guess the word "${correctWord}"!`,
             message_type: 'loose'
           })
+          addStatsToDatabase(client.user?.id, false);
           clearInterval(intervalId);
           return prevTimer;
         }
@@ -132,6 +140,22 @@ function Game({channel, selectedWord, wordSet}) {
 
 
 
+  const addStatsToDatabase = async (userId, win) => {
+    try {
+      const response = await axios.post('http://localhost:3001/addStats', { userId, win });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
+
+
+
+
+
 
 
 
@@ -140,6 +164,7 @@ function Game({channel, selectedWord, wordSet}) {
     // and will clear the messages in the channel
     channel.truncate();
   }, [channel]);
+
 
 
 
@@ -182,7 +207,7 @@ function Game({channel, selectedWord, wordSet}) {
         count++; // increment the counter
         if (count === 2) {
           setGameOver({gameOver: false, guessedWord: false});
-          setCheckLoose(true); // set checkWin to true when the message is seen twice
+          setCheckLoose(true);
         }
       }
     };
@@ -219,43 +244,42 @@ if (!playersJoined){
   return (
     <div className='gameContainer'>
 
-{checkWin ? (
-        <Win winnerUserId={winnerUserId} winnerTempWord={winnerTempWord} winnerUsername={winnerUsername} winnerAttempt={winnerAttempt} channel={channel} />
-      ) : checkLoose ? (
-        <Loose />
-      ) : (
-        <>
-          <p>{`Time remaining: ${Math.floor(timer / 60)}:${timer % 60
-            .toString()
-            .padStart(2, '0')}`}</p>
-          {/* display the time remaining in minutes:seconds format */}
-        </>
-      )}
-      {!checkWin && !checkLoose && timer === 0 && (
-        <div>
-          <p>Time's up!</p>
+    {checkWin ? (
+            <Win winnerUserId={winnerUserId} winnerTempWord={winnerTempWord} winnerUsername={winnerUsername} winnerAttempt={winnerAttempt} channel={channel} />
+          ) : checkLoose ? (
+            <Loose />
+          ) : (
+            <>
+              <p>{`Time remaining: ${Math.floor(timer / 60)}:${timer % 60
+                .toString()
+                .padStart(2, '0')}`}</p>
+              {/* display the time remaining in minutes:seconds format */}
+            </>
+          )}
+          {!checkWin && !checkLoose && timer === 0 && (
+            <div>
+              <p>Time's up!</p>
+          
+            </div>
+          )}
+          <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
+            <div className='game'>
+            
+              {/*<button onClick={() =>
+              setShowWordInput(true)}>Show</button> */}
+             {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
+    
+               { gameOver.gameOver ? null : <Board/>}
+              { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
+            </div>
+          </Gamecontext.Provider>
+          <Window>
+            <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages />
+            <MessageInput noFiles/>
+          </Window>
+    
         </div>
-      )}
-      <Gamecontext.Provider value={{ board, setBoard, currAttempt, setCurrAttempt, onSelectLetter, onDelete, onEnter, correctWord, setDisabledLetters, disabledLetters, gameOver, setGameOver, }}>
-        <div className='game'>
-        
-          {/*<button onClick={() =>
-          setShowWordInput(true)}>Show</button> */}
-         {/* <WordInput  visible={showWordInput} onClose={() => setShowWordInput(false)}  />  */}
-
-          <Board/>
-          { gameOver.gameOver ? <GameOver /> : <Keyboard/>}
-        </div>
-      </Gamecontext.Provider>
-      <Window>
-        <MessageList disableDateSeparator closeReactionSelectorOnClick messageActions={["react"]} hideDeletedMessages />
-        <MessageInput noFiles/>
-      </Window>
-
-    </div>
-  )
-}
-
-export default Game
-
-
+      )
+    }
+    
+    export default Game
