@@ -3,7 +3,6 @@ import './Components.css';
 import Key from './Key';
 import { Gamecontext } from './Game';
 import WordInput from './WordInput';
-import { MessageInput } from 'stream-chat-react';
 
 function Keyboard() {
   const keys1 = ["Q", "W", "E","R","T","Y","U", "I", "O","P"];
@@ -12,6 +11,7 @@ function Keyboard() {
 
   const { onDelete, onSelectLetter, onEnter, setShowWordInput, showWordInput, disabledLetters } = useContext(Gamecontext);
 
+  // handle key press event
   const handleKeyboard = useCallback((event) => {
     if (document.activeElement === document.querySelector(".str-chat__message-textarea")) {
       return;
@@ -40,14 +40,14 @@ function Keyboard() {
   }, [onDelete, onSelectLetter, onEnter, keys1, keys2, keys3]);
 
   useEffect(() => {
+    // add or remove keydown event listener based on showWordInput value
     if (!showWordInput) {
       document.addEventListener("keydown", handleKeyboard);
     } else {
       document.removeEventListener("keydown", handleKeyboard);
     }
 
-  
-
+    // remove keydown event listener on unmount
     return () => {
       document.removeEventListener("keydown", handleKeyboard);
     };
@@ -56,6 +56,7 @@ function Keyboard() {
   return (
     <div className='keyboard'>
       <WordInput visible={showWordInput} onClose={() => setShowWordInput(false)} />
+      {/* render keys on keyboard */}
       <div className='line1'>{keys1.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}</div>;
       <div className='line2'>{keys2.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}</div>;
       <div className='line3'><Key keyVal='ENTER' bigKey />{keys3.map(key => <Key keyVal={key} key={key} disabled={disabledLetters.includes(key)} />)}<Key keyVal='DELETE' bigKey />

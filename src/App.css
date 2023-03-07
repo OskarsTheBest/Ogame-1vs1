@@ -1,3 +1,133 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.App {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg,#1E3A8A,#141c29);
+    overflow: hidden;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-family: montserrat;
+  }
+  .signup {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    float: right;
+    top: 30%;
+    left: 74%;
+    position: absolute;
+    background: linear-gradient(60deg,#1e598a,#141c29);
+  }
+  
+  .signup label {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #ccc;
+  }
+  
+  .signup input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .signup button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .login {
+    width: 300px;
+    margin: 0 auto;
+    padding: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    float: left;
+    clear: left;
+    margin-right: 20px;
+    top: 38%;
+    left: 15%;
+    position: absolute;
+    background: linear-gradient(60deg,#1e598a,#141c29);
+  }
+  
+  .login label {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #ccc;
+  }
+  
+  .login input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .login button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+.logo{
+  margin-bottom: 16px;
+  height: 20vh;
+  top: 10%;
+  position: absolute;
+}
+.titel{
+  font-size: 72px;
+  color: white;
+}
+
+  .logout {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #f44336; /* Change this to your preferred color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .logout:hover {
+    background-color: #d32f2f; /* Change this to your preferred hover color */
+  }

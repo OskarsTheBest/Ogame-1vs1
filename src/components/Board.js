@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+// Import React module
+import React from 'react'
 
+// Import Letter component and CSS file
 import Letter from './Letter'
 import './Components.css';
 
+// Define Board component
 function Board() {
+
+// Render Board component that shows the rows of the wordle
 
   return (
     <div className='board'>

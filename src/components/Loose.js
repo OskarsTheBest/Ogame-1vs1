@@ -1,11 +1,19 @@
 import React from 'react'
+import './WinLoss.css'
 
-function Loose() {
+
+function Lose() {
+
+  const handleGoBack = () => {
+    window.location.href = "/";
+  };
+
   return (
-    <div>
-      <h1>You both Lost</h1>
+    <div className='wordleLose'>
+      <h1>You Lost</h1>
+      <button className='go-back-btn' onClick={handleGoBack}>Go back</button>
     </div>
   )
 }
 
-export default Loose
+export default Lose

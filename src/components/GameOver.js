@@ -3,7 +3,7 @@ import { Gamecontext } from './Game';
 
 
 function GameOver() {
-    
+    //used to render the gameover function on win/loose, now there is win.js and loose.js
   const {gameOver, currAttempt, correctWord } = useContext(Gamecontext);
   return (
     <div className='gameOver'>
